@@ -1,0 +1,79 @@
+﻿@page "/"
+
+@using Mini_CRM_Blazor.Client.Shared
+@using MudBlazor
+
+@inject NavigationManager NavManager
+
+<MudPaper Height="100vh"
+          Width="100%"
+          Class="pa-16"
+          Style=@($"background-color: {Colors.Indigo.Lighten5}; display: flex; align-items: center; flex-direction: column; gap: 16px;")>
+    <MudPaper Elevation="0" Style=@($"background-color: {Colors.Indigo.Lighten5}; align-self: flex-start")>
+        <MudText Typo="Typo.h3" Align="Align.Center" GutterBottom="true">Mini CRM</MudText>
+    </MudPaper>
+    <MudContainer MaxWidth="MaxWidth.Small">
+        <MudText Align="Align.Center">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec est quam, ullamcorper vitae dapibus sed, elementum vitae sapien.</MudText>
+        <MudCard Elevation="0" Class="rounded-sm my-4">
+            @*<MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h5" Align="Align.Center">Starter</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>*@
+            <MudCardContent>
+                @if (_isSignInMode)
+                {
+                    <UserSignInComponent />
+                }
+                else
+                {
+                    <UserSignUpComponent />
+                }
+            </MudCardContent>
+            <MudDivider />
+            <MudCardActions>
+                @if (_isSignInMode)
+                {
+                    <MudButton Variant="Variant.Text"
+                               Color="Color.Primary"
+                               DisableElevation="true"
+                               @onclick="SwitchCustomerSignInSignUp">
+                        Create an account
+                    </MudButton>
+                }
+                else
+                {
+                    <MudButton Variant="Variant.Text"
+                               Color="Color.Primary"
+                               DisableElevation="true"
+                               @onclick="SwitchCustomerSignInSignUp">
+                        I already have an account
+                    </MudButton>
+                }
+            </MudCardActions>
+        </MudCard>
+    </MudContainer>
+    <MudLink Href="#"
+             Typo="Typo.body2"
+             Align="Align.Center">
+        Log in as MiniCRM admin
+    </MudLink>
+</MudPaper>
+
+@code {
+    bool _drawerOpen = false;
+    bool _isCustomerLogInForm = false;
+    bool _isSignInMode = true;
+
+    private void SwitchCustomerSignInSignUp()
+    {
+        _isSignInMode = !_isSignInMode;
+    }
+
+    private void LogInAsMiniCRMAdmin()
+    {
+        _drawerOpen = !_drawerOpen;
+        _isCustomerLogInForm = !_isCustomerLogInForm;
+        // NavManager.NavigateTo("/");
+    }
+}

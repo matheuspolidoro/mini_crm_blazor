@@ -3,13 +3,11 @@
 @using Mini_CRM_Blazor.Client.Shared
 @using MudBlazor
 
-@inject NavigationManager NavManager
-
 <MudPaper Height="100vh"
           Width="100%"
-          Class="pa-16"
-          Style=@($"background-color: {Colors.Indigo.Lighten5}; display: flex; align-items: center; flex-direction: column; gap: 16px;")>
-    <MudPaper Elevation="0" Style=@($"background-color: {Colors.Indigo.Lighten5}; align-self: flex-start")>
+          Class="pa-16 d-flex flex-column align-items-center"
+          Style=@($"gap: 16px; background: {Colors.Indigo.Lighten5}")>
+    <MudPaper Class="pa-12" Elevation="0" Style=@($"align-self: flex-start")>
         <MudText Typo="Typo.h3" Align="Align.Center" GutterBottom="true">Mini CRM</MudText>
     </MudPaper>
     <MudContainer MaxWidth="MaxWidth.Small">

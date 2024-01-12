@@ -1,22 +1,27 @@
 ﻿@using Microsoft.AspNetCore.Components.Forms
+@using Mini_CRM_Blazor.Shared.Models
 @using MudBlazor
 @using System.ComponentModel.DataAnnotations
 
-<EditForm Model="@model" OnValidSubmit="OnValidSubmit">
-    <DataAnnotationsValidator />
+@inject NavigationManager navigationManager
+@inject CustomStateProvider authStateProvider
 
+<EditForm OnValidSubmit="OnSubmit" Model="loginRequest">
+    <DataAnnotationsValidator />
     <MudCard Elevation="0">
         <MudCardContent>
-            <MudTextField Label="Email"
+            <MudTextField Label="UserName"
                           Class="mt-3"
-                          @bind-Value="model.Email"
-                          For="@(() => model.Email)" />
+                          @bind-Value="loginRequest.UserName"
+                          For="@(() => loginRequest.UserName)" />
+            <ValidationMessage For="@(() => loginRequest.UserName)" />
             <MudTextField Label="Password"
                           HelperText="Choose a strong password"
                           Class="mt-3"
-                          @bind-Value="model.Password"
-                          For="@(() => model.Password)"
+                          @bind-Value="loginRequest.Password"
+                          For="@(() => loginRequest.Password)"
                           InputType="InputType.Password" />
+            <ValidationMessage For="@(() => loginRequest.Password)" />
         </MudCardContent>
         <MudCardActions>
             <MudButton ButtonType="ButtonType.Submit"
@@ -25,37 +30,30 @@
                        DisableElevation="true"
                        Class="ml-auto">Log in</MudButton>
         </MudCardActions>
+        <div class="form-check m-3">
+            <InputCheckbox id="inputRememberMe" class="form-check-input" @bind-Value="loginRequest.RememberMe" />
+            <label class="form-check-label" for="inputRememberMe">Remember Me</label>
+        </div>
     </MudCard>
+    <label class="text-danger">@error</label>
 </EditForm>
 
 @code {
-    SignInAccountForm model = new SignInAccountForm();
+    public LoginRequest loginRequest { get; set; } = new LoginRequest();
+    string error { get; set; }
     bool success;
 
-    public class SignInAccountForm
+    async Task OnSubmit()
     {
-        [Required]
-        [StringLength(8, ErrorMessage = "Name length can't be more than 8.")]
-        public string Username { get; set; }
-
-        [Required]
-        [EmailAddress]
-        public string Email { get; set; }
-
-        [Required]
-        [StringLength(30, ErrorMessage = "Password must be at least 8 characters long.", MinimumLength = 8)]
-        public string Password { get; set; }
-
-        [Required]
-        [Compare(nameof(Password))]
-        public string Password2 { get; set; }
-
+        error = null;
+        try
+        {
+            await authStateProvider.Login(loginRequest);
+            navigationManager.NavigateTo("/dashboard");
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+        }
     }
-
-    private void OnValidSubmit(EditContext context)
-    {
-        success = true;
-        StateHasChanged();
-    }
-
 }

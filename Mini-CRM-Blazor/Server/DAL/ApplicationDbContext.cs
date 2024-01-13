@@ -9,5 +9,12 @@ namespace Mini_CRM_Blazor.Server.DAL
         public ApplicationDBContext(DbContextOptions<ApplicationDBContext> options) : base(options)
         {
         }
+
+        public DbSet<Company> Companies { get; set; }
+        public DbSet<Customer> Customers { get; set; }
+        public DbSet<Supplier> Suppliers { get; set; }
+        public DbSet<AssociateMember> AssociateMembers { get; set; }
+        public DbSet<Contract> Contracts { get; set; }
+        public DbSet<EnterpriseContact> EnterpriseContacts { get; set; }
     }
 }

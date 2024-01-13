@@ -6,11 +6,11 @@ namespace Mini_CRM_Blazor.Server.Models
     public class AssociateMember
     {
         [Key]
-        public Guid Id { get; set;}
+        public Guid Id { get; set; }
         [Required]
-        public Guid ApplicationUserId { get; set; }
+        public String ApplicationUserId { get; set; }
         [Required]
-        public Guid CompanyId { get; set; }
+        public Guid CompanySubscriberId { get; set; }
         [Required]
         public string Name { get; set; }
         [Required, StringLength(255)]
@@ -19,8 +19,8 @@ namespace Mini_CRM_Blazor.Server.Models
         public string Position { get; set; }
 
 
-        [ForeignKey("CompanyId")]
-        public virtual Company Company { get; set; }
+        [ForeignKey("CompanySubscriberId")]
+        public virtual CompanySubscriber CompanySubscriber { get; set; }
         [ForeignKey("ApplicationUserId")]
         public virtual ApplicationUser ApplicationUser { get; set; }
     }

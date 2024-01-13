@@ -2,7 +2,7 @@
 
 namespace Mini_CRM_Blazor.Server.Models
 {
-    public class EnterpriseModel
+    public class CompanySubscriber
     {
         [Key]
         public Guid Id { get; set; }
@@ -13,11 +13,12 @@ namespace Mini_CRM_Blazor.Server.Models
         [Required]
         public string AreaOfBusiness { get; set; }
         public string Website { get; set; }
-        [Required, EmailAddress]
+        [EmailAddress]
         public string Email { get; set; }
-        [Required]
         public string PhoneNumber { get; set; }
 
-        public virtual ICollection<EnterpriseContact> EnterpriseContacts { get; set; } = new List<EnterpriseContact>();
+        public virtual ICollection<AssociateMember> AssociateMembers { get; set; } = new List<AssociateMember>();
+        public virtual ICollection<Customer> Customers { get; set; } = new List<Customer>();
+        public virtual ICollection<Supplier> Suppliers { get; set; } = new List<Supplier>();
     }
 }

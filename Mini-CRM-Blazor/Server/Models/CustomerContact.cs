@@ -3,15 +3,15 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Mini_CRM_Blazor.Server.Models
 {
-    public class EnterpriseContact
+    public class CustomerContact
     {
         [Key]
         public Guid Id { get; set; }
         [Required]
-        public Guid EnterpriseId { get; set; }
+        public Guid CustomerId { get; set; }
         
-        [ForeignKey("EnterpriseId")]
-        public virtual EnterpriseModel Enterprise  { get; set; }
+        [ForeignKey("CustomerId")]
+        public virtual Customer Customer { get; set; }
         
         [Required]
         public string ContactInfo { get; set; }

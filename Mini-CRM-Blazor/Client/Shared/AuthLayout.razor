@@ -1,7 +1,6 @@
-﻿@inherits LayoutComponentBase
-
-@inject NavigationManager navigationManager
+﻿@inject NavigationManager navigationManager
 @inject CustomStateProvider authStateProvider
+@inherits LayoutComponentBase
 @layout MainLayout
 
 @Body
@@ -9,15 +8,19 @@
 @code {
     [CascadingParameter]
     Task<AuthenticationState> AuthenticationState { get; set; }
+
     protected override async Task OnParametersSetAsync()
     {
-        var auth = !(await AuthenticationState).User.Identity.IsAuthenticated;
-        if (auth)
+        var authState = await AuthenticationState;
+        var user = authState.User;
+
+        if (!user.Identity.IsAuthenticated)
         {
             navigationManager.NavigateTo("/");
         }
     }
-    async Task LogoutClick()
+
+    public async Task LogoutClick()
     {
         await authStateProvider.Logout();
         navigationManager.NavigateTo("/");

@@ -1,5 +1,4 @@
-﻿
-using Mini_CRM_Blazor.Client.Services;
+﻿using Mini_CRM_Blazor.Client.Services;
 using Mini_CRM_Blazor.Shared.Models;
 using System.Net.Http.Json;
 

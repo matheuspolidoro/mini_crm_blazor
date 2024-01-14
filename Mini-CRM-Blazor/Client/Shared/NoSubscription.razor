@@ -1,0 +1,21 @@
+﻿@page "/no-referral"
+
+@using Microsoft.AspNetCore.Components.Forms
+@using Mini_CRM_Blazor.Shared.Models
+@using MudBlazor
+@using System.ComponentModel.DataAnnotations
+
+@inject CustomStateProvider authStateProvider
+@inject NavigationManager navigationManager
+
+<h3>It looks like you are not part of an organization yet. A manager of your company must add you as an associate.</h3>
+
+<MudButton @onclick="LogOut">Logout</MudButton>
+
+@code {
+    private async Task LogOut()
+    {
+        await authStateProvider.Logout();
+        navigationManager.NavigateTo("/");
+    }
+}

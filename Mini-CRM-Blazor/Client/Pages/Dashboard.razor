@@ -1,21 +1,33 @@
 ﻿@page "/dashboard"
-@layout AuthLayout
 
+@inherits AuthLayout
+
+@using Microsoft.AspNetCore.Authorization
 @using Mini_CRM_Blazor.Client.Shared
 @using MudBlazor
+
+@inject CustomStateProvider authStateProvider
+@inject NavigationManager navigationManager
+
+@attribute [Authorize(Roles = "Manager, Associate")]
 
 <MudLayout>
     <MudAppBar Elevation="1">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
         <MudText Typo="Typo.h5" Class="ml-3">Application</MudText>
         <MudSpacer />
-        <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
+        <MudMenu Icon="@Icons.Material.Filled.MoreVert">
+            <MudMenuItem>My account</MudMenuItem>
+            <MudMenuItem @onclick="LogoutClick">Logout</MudMenuItem>
+        </MudMenu>
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
         <NavMenuComponent />
     </MudDrawer>
-    <MudMainContent>
-        @*Body*@
+    <MudMainContent class="d-flex" Style="height: 100vh;">
+        <MudContainer class="pt-6" Style=@($"background-color: {Colors.Indigo.Lighten5};") MaxWidth="MaxWidth.False">
+            @Body
+        </MudContainer>
     </MudMainContent>
 </MudLayout>
 

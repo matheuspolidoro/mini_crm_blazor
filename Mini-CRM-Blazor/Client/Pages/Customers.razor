@@ -1,0 +1,103 @@
+﻿@page "/customers"
+@layout Dashboard
+
+@using Mini_CRM_Blazor.Shared.Models
+@using MudBlazor
+
+@inject HttpClient httpClient
+
+<MudTable ServerData="@(new Func<TableState, Task<TableData<CustomerDto>>>(ServerReload))"
+          Dense="true" Hover="true" @ref="table">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Customers</MudText>
+        <MudSpacer />
+        <MudTextField T="string" ValueChanged="@(s => OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortLabel="TradingName" T="CustomerDto">Trading name</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="AreaOfBusiness" T="CustomerDto">Area of business</MudTableSortLabel></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="TradingName">@context.TradingName</MudTd>
+            <MudTd DataLabel="AreaOfBusiness">@context.AreaOfBusiness</MudTd>
+        </RowTemplate>
+        <NoRecordsContent>
+            <MudText>No matching records found</MudText>
+        </NoRecordsContent>
+        <LoadingContent>
+            <MudText>Loading...</MudText>
+        </LoadingContent>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+
+    @code {
+    private IEnumerable<CustomerDto> pagedData;
+    private MudTable<CustomerDto> table;
+
+    private int totalItems;
+    private string searchString = null;
+
+    private async Task<TableData<CustomerDto>> ServerReload(TableState state)
+    {
+        //IEnumerable<CustomerDto> data = await httpClient.GetFromJsonAsync<List<CustomerDto>>("api/customer");
+        IEnumerable<CustomerDto> data = CustomerList;
+        await Task.Delay(2000);
+
+        data = data.Where(element =>
+        {
+            if (string.IsNullOrWhiteSpace(searchString))
+                return true;
+            if (element.TradingName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                return true;
+            if (element.AreaOfBusiness.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                return true;
+            return false;
+        }).ToArray();
+
+        totalItems = data.Count();
+
+        switch (state.SortLabel)
+        {
+            case "TradingName":
+                data = data.OrderByDirection(state.SortDirection, o => o.TradingName);
+                break;
+            case "AreaOfBusiness":
+                data = data.OrderByDirection(state.SortDirection, o => o.AreaOfBusiness);
+                break;
+        }
+
+        pagedData = data.Skip(state.Page * state.PageSize).Take(state.PageSize).ToArray();
+        return new TableData<CustomerDto>() { TotalItems = totalItems, Items = pagedData };
+    }
+
+    private void OnSearch(string text)
+    {
+        searchString = text;
+        table.ReloadServerData();
+    }
+
+    public List<CustomerDto> CustomerList { get; set; } = new List<CustomerDto>
+    {
+        new CustomerDto
+        {
+            Id = Guid.NewGuid(),
+            CompanyName = "Microsoft Corporation, Inc.",
+            TradingName = "Microsoft",
+            Website = "www.microsoft.com",
+            AreaOfBusiness = "Technology",
+            Description = "A good description here"
+        },
+        new CustomerDto
+        {
+            Id = Guid.NewGuid(),
+            CompanyName = "Apple Computer, Inc..",
+            TradingName = "Apple",
+            Website = "www.apple.com",
+            AreaOfBusiness = "Technology",
+            Description = "A good description here"
+        },
+    };
+}

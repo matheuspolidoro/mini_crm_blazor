@@ -14,14 +14,13 @@
                           Class="mt-3"
                           @bind-Value="loginRequest.UserName"
                           For="@(() => loginRequest.UserName)" />
-            <ValidationMessage For="@(() => loginRequest.UserName)" />
+            @*<ValidationMessage For="@(() => loginRequest.UserName)" />*@
             <MudTextField Label="Password"
                           HelperText="Choose a strong password"
-                          Class="mt-3"
                           @bind-Value="loginRequest.Password"
                           For="@(() => loginRequest.Password)"
                           InputType="InputType.Password" />
-            <ValidationMessage For="@(() => loginRequest.Password)" />
+            @* <ValidationMessage For="@(() => loginRequest.Password)" />*@
         </MudCardContent>
         <MudCardActions>
             <MudButton ButtonType="ButtonType.Submit"

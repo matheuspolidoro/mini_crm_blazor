@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Mini_CRM_Blazor.Shared.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Mini_CRM_Blazor.Server.Models
@@ -30,11 +31,5 @@ namespace Mini_CRM_Blazor.Server.Models
 
         [EnumDataType(typeof(TypeContacts))]
         public TypeContacts TypeContact { get; set; }
-
-        public enum TypeContacts
-        {
-            Email = 0,
-            PhoneNumber = 1
-        }
     }
 }

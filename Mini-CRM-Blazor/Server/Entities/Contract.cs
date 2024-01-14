@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Mini_CRM_Blazor.Shared.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Mini_CRM_Blazor.Server.Models
@@ -27,20 +28,11 @@ namespace Mini_CRM_Blazor.Server.Models
             }
             set
             {
-                Status = (Statuses)value;
+                Status = (ContractStatuses)value;
             }
         }
 
-        [EnumDataType(typeof(Statuses))]
-        public Statuses Status { get; set; }
-        
-        public enum Statuses
-        {
-            Leads = 0,
-            SalesCall = 1,
-            FollowUp = 2,
-            Conversion = 3,
-            Sale = 4
-        }
+        [EnumDataType(typeof(ContractStatuses))]
+        public ContractStatuses Status { get; set; }
     }
 }

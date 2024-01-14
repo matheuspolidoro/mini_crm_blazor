@@ -69,5 +69,22 @@ namespace Mini_CRM_Blazor.Server.Controllers
                 .ToDictionary(c => c.Type, c => c.Value)
             };
         }
+
+        [HttpPost]
+        public async Task<IActionResult> AddUserToRole(string userEmail, string role)
+        {
+            var user = await _userManager.FindByEmailAsync(userEmail);
+            if (user == null)
+            {
+                return BadRequest();
+            }
+
+            var identityResult = await _userManager.AddToRoleAsync(user, role);
+            
+            if(identityResult.Succeeded) 
+                return Ok();
+
+            return BadRequest();
+        }
     }
 }

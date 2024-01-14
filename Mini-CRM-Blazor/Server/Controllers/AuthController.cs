@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Mini_CRM_Blazor.Server.Models;
+using Mini_CRM_Blazor.Server.Services;
 using Mini_CRM_Blazor.Shared.Models;
 
 namespace Mini_CRM_Blazor.Server.Controllers
@@ -13,16 +14,18 @@ namespace Mini_CRM_Blazor.Server.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        public AuthController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        private readonly ApplicationUsersService _applicationUsersService;
+        public AuthController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ApplicationUsersService applicationUsersService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _applicationUsersService = applicationUsersService;
         }
 
         [HttpPost]
         public async Task<IActionResult> Login(LoginRequest request)
         {
-            var user = await _userManager.FindByNameAsync(request.UserName);
+            var user = await _userManager.FindByEmailAsync(request.Email);
             if (user == null) return BadRequest("User does not exist");
 
             var singInResult = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
@@ -45,7 +48,7 @@ namespace Mini_CRM_Blazor.Server.Controllers
 
             return await Login(new LoginRequest
             {
-                UserName = parameters.UserName,
+                Email = parameters.Email,
                 Password = parameters.Password
             });
         }
@@ -73,18 +76,21 @@ namespace Mini_CRM_Blazor.Server.Controllers
         [HttpPost]
         public async Task<IActionResult> AddUserToRole(string userEmail, string role)
         {
-            var user = await _userManager.FindByEmailAsync(userEmail);
-            if (user == null)
+            if(!ModelState.IsValid) return BadRequest(ModelState);
+
+            try
             {
-                return BadRequest();
+                var result = await _applicationUsersService.AddUserToRole(userEmail, role);
+                
+                if(result.Sucess)
+                    return Ok(result);
+
+                return BadRequest(result.Message);
             }
-
-            var identityResult = await _userManager.AddToRoleAsync(user, role);
-            
-            if(identityResult.Succeeded) 
-                return Ok();
-
-            return BadRequest();
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

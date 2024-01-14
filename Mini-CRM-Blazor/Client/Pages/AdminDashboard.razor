@@ -1,4 +1,4 @@
-﻿@page "/admin"
+﻿@page "/in/admin"
 
 @using Microsoft.AspNetCore.Authorization
 @using Mini_CRM_Blazor.Client.Shared
@@ -6,11 +6,26 @@
 @using MudBlazor
 
 @layout AuthLayout
+@inherits MainLayout
 
 @attribute [Authorize(Roles = "Admin")]
 @inject HttpClient httpClient
+@inject IDialogService DialogService
+@inject CustomStateProvider authStateProvider
+@inject NavigationManager navigationManager
 
-<MudContainer>
+<MudAppBar Color="Color.Primary" Fixed="false">
+    <MudText> MiniCRM </MudText>
+    <MudSpacer />
+    <MudMenu Icon="@Icons.Material.Filled.MoreVert">
+        <MudMenuItem @onclick="LogoutClick">Logout</MudMenuItem>
+    </MudMenu>
+</MudAppBar>
+<MudContainer Class="d-flex flex-column pv-16" MaxWidth="MaxWidth.False" Style=@($"background: {Colors.Indigo.Lighten5}; height: 100vh; padding-top: 64px;")>
+    <MudButton Class="mb-4" Style="width: fit-content; align-self: self-end;" Variant="Variant.Filled" Color="Color.Primary" @onclick="OpenDialog">
+        Add subscription
+    </MudButton>
+
     <MudTable ServerData="@(new Func<TableState, Task<TableData<CompanySubscriberDto>>>(GetCompanies))"
               Dense="true" Hover="true" @ref="table">
         <ToolBarContent>
@@ -20,11 +35,13 @@
                           AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
         </ToolBarContent>
         <HeaderContent>
+            <MudTh><MudTableSortLabel SortLabel="CompanyName" T="CompanySubscriberDto">Company name</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortLabel="TradingName" T="CompanySubscriberDto">Trading name</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortLabel="AreaOfBusiness" T="CompanySubscriberDto">Area of business</MudTableSortLabel></MudTh>
         </HeaderContent>
         <RowTemplate>
-            <MudTd DataLabel="TradingName">@context.TradingName</MudTd>
+            <MudTd DataLabel="TradingName">@context.CompanyName</MudTd>
+                <MudTd DataLabel="TradingName">@context.TradingName</MudTd>
                 <MudTd DataLabel="AreaOfBusiness">@context.AreaOfBusiness</MudTd>
             </RowTemplate>
             <NoRecordsContent>
@@ -42,15 +59,30 @@
     @code {
     private IEnumerable<CompanySubscriberDto> pagedData;
     private MudTable<CompanySubscriberDto> table;
-
     private int totalItems;
     private string searchString = null;
 
+    private async void OpenDialog()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        var dialog = DialogService.Show<AddCompanyDialog>("Add new subscription", options);
+
+        var result = await dialog.Result;
+        if (result.Data != null)
+            await table.ReloadServerData();
+    }
+
+    public async Task LogoutClick()
+    {
+        await authStateProvider.Logout();
+        navigationManager.NavigateTo("/");
+    }
+
     private async Task<TableData<CompanySubscriberDto>> GetCompanies(TableState state)
     {
-        //IEnumerable<CompanySubscriberDto> data = await httpClient.GetFromJsonAsync<List<CompanySubscriberDto>>("api/CompanySubscriber/GetAll");
-         IEnumerable<CompanySubscriberDto> data = CompanySubscriberList;
-         await Task.Delay(1300);
+        IEnumerable<CompanySubscriberDto> data = await httpClient.GetFromJsonAsync<List<CompanySubscriberDto>>("api/CompanySubscribers/GetAll");
+        //IEnumerable<CompanySubscriberDto> data = CompanySubscriberList;
+        await Task.Delay(1300);
 
         data = data.Where(element =>
         {

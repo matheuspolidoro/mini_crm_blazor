@@ -1,15 +1,20 @@
-﻿@inject NavigationManager navigationManager
+﻿@page "/in"
+
+@inject NavigationManager navigationManager
 @inject CustomStateProvider authStateProvider
+
 @inherits LayoutComponentBase
 @layout MainLayout
 
-@Body
+<CascadingValue Value="AuthenticationState" Name="AuthenticationState">
+    @Body
+</CascadingValue>
 
 @code {
     [CascadingParameter]
-    Task<AuthenticationState> AuthenticationState { get; set; }
+    public Task<AuthenticationState> AuthenticationState { get; set; }
 
-    protected override async Task OnParametersSetAsync()
+    protected override async void OnInitialized()
     {
         var authState = await AuthenticationState;
         var user = authState.User;
@@ -17,7 +22,22 @@
         if (!user.Identity.IsAuthenticated)
         {
             navigationManager.NavigateTo("/");
+            return;
         }
+
+        if (user.IsInRole("Admin"))
+        {
+            navigationManager.NavigateTo("/in/admin");
+            return;
+        }
+
+        if (user.IsInRole("Manager") || user.IsInRole("Associate"))
+        {
+            navigationManager.NavigateTo("/in/dashboard/overview");
+            return;
+        }
+
+        navigationManager.NavigateTo("/in/no-referral");
     }
 
     public async Task LogoutClick()

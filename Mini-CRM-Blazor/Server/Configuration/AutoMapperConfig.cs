@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.Extensions.DependencyInjection;
 using Mini_CRM_Blazor.Server.Models;
 using Mini_CRM_Blazor.Shared.Models;
 
@@ -9,13 +8,15 @@ namespace Mini_CRM_Blazor.Server.Configuration
     {
         public static IServiceCollection RegisterAutoMapper(this IServiceCollection services)
         {
-            services.AddAutoMapper(typeof(Program));
-
             var config = new MapperConfiguration(cfg =>
             {
                 cfg.AllowNullCollections = true;
 
                 cfg.CreateMap<Customer, CustomerDto>();
+                cfg.CreateMap<CustomerDto, Customer>();
+
+                cfg.CreateMap<CompanySubscriber, CompanySubscriberDto>();
+                cfg.CreateMap<CompanySubscriberDto, CompanySubscriber>();
 
                 //cfg.CreateMap<EntityFrom, EntityTo>()
                 //    .ForMember(d => d.Name, d => d.MapFrom(x => x.OtherEntity.Name))
@@ -23,9 +24,9 @@ namespace Mini_CRM_Blazor.Server.Configuration
             });
 
             IMapper mapper = config.CreateMapper();
+            services.AddSingleton(mapper);
 
             return services;
         }
-
     }
 }

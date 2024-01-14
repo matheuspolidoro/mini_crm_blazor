@@ -1,38 +1,66 @@
-﻿@page "/dashboard"
+﻿@page "/in/dashboard"
 
-@inherits AuthLayout
+@layout AuthLayout
+@inherits MainLayout
 
 @using Microsoft.AspNetCore.Authorization
 @using Mini_CRM_Blazor.Client.Shared
+@using Mini_CRM_Blazor.Shared.Models
 @using MudBlazor
 
 @inject CustomStateProvider authStateProvider
 @inject NavigationManager navigationManager
+@inject CustomStateProvider authStateProvider
+@inject CompanySubscriberService companyService
 
-@attribute [Authorize(Roles = "Manager, Associate")]
+@attribute [Authorize]
 
 <MudLayout>
     <MudAppBar Elevation="1">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        <MudText Typo="Typo.h5" Class="ml-3">Application</MudText>
-        <MudSpacer />
-        <MudMenu Icon="@Icons.Material.Filled.MoreVert">
-            <MudMenuItem>My account</MudMenuItem>
-            <MudMenuItem @onclick="LogoutClick">Logout</MudMenuItem>
-        </MudMenu>
-    </MudAppBar>
-    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
-        <NavMenuComponent />
-    </MudDrawer>
-    <MudMainContent class="d-flex" Style="height: 100vh;">
-        <MudContainer class="pt-6" Style=@($"background-color: {Colors.Indigo.Lighten5};") MaxWidth="MaxWidth.False">
-            @Body
+        <MudText Typo="Typo.h5" Class="ml-3">@companyService?.CompanySubscriberDto?.CompanyName</MudText>
+            <MudSpacer />
+            <MudMenu Icon="@Icons.Material.Filled.MoreVert">
+                <MudMenuItem @onclick="LogoutClick">Logout</MudMenuItem>
+            </MudMenu>
+        </MudAppBar>
+        <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+            <NavMenuComponent />
+        </MudDrawer>
+        <MudMainContent class="d-flex" Style="height: 100vh;">
+            <MudContainer class="pt-6" Style=@($"background-color: {Colors.Indigo.Lighten5};") MaxWidth="MaxWidth.False">
+                @Body
         </MudContainer>
     </MudMainContent>
 </MudLayout>
 
 @code {
+    [CascadingParameter]
+    Task<AuthenticationState> AuthenticationState { get; set; }
+
+    public async Task LogoutClick()
+    {
+        await authStateProvider.Logout();
+        navigationManager.NavigateTo("/");
+    }
+
     bool _drawerOpen = false;
+
+    public async Task GetCompany()
+    {
+        var authState = await AuthenticationState;
+        var user = authState.User;
+
+        var claim = user.Claims.Where(c => c.Type == "CompanySubscriber").FirstOrDefault();
+
+        if (claim != null)
+            await companyService.GetCompany(Guid.Parse(claim.Value));
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await GetCompany();
+    }
 
     void DrawerToggle()
     {

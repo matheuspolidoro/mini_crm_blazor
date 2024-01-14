@@ -10,15 +10,15 @@ namespace Mini_CRM_Blazor.Server.Models
         [Required]
         public Guid CompanySubscriberId { get; set; }
         [Required]
-        public string CompanyName { get; set; }
-        public string TradingName { get; set; }
-        public string Description { get; set; }
+        public string? CompanyName { get; set; }
+        public string? TradingName { get; set; }
+        public string? Description { get; set; }
         [Required]
         public string AreaOfBusiness { get; set; }
-        public string Website { get; set; }
+        public string? Website { get; set; }
         [EmailAddress]
         public string Email { get; set; }
-        public string PhoneNumber { get; set; }
+        public string? PhoneNumber { get; set; }
 
         [ForeignKey("CompanySubscriberId")]
         public virtual CompanySubscriber CompanySubscriber { get; set; }

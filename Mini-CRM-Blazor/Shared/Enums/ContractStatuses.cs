@@ -2,10 +2,11 @@
 {
     public enum ContractStatuses
     {
-        Leads = 0,
-        SalesCall = 1,
-        FollowUp = 2,
+        Leads = 0, //Filter
+        SalesCall = 1, //Call
+        FollowUp = 2, //QuestionAnswer
         Conversion = 3,
-        Sale = 4
+        Sale = 4, //Handshake
+
     }
 }

@@ -11,10 +11,15 @@ namespace Mini_CRM_Blazor.Server.Services
     {
         private readonly CompanySubscribersRepository _companySubscribersRepository;
         private readonly IMapper _mapper;
-        public CompanySubscribersService(CompanySubscribersRepository companySubscribersRepository, IMapper mapper)
+        private readonly ApplicationUsersService _applicationUsersService;
+        private readonly ApplicationUsersRepository _applicationUsersRepository;
+
+        public CompanySubscribersService(CompanySubscribersRepository companySubscribersRepository, IMapper mapper, ApplicationUsersService applicationUsersService, ApplicationUsersRepository applicationUsersRepository)
         {
             _companySubscribersRepository = companySubscribersRepository;
             _mapper = mapper;
+            _applicationUsersService = applicationUsersService;
+            _applicationUsersRepository = applicationUsersRepository;
         }
 
         public async Task<BaseResponse<IEnumerable<CompanySubscriberDto>>> GetAll()
@@ -35,23 +40,25 @@ namespace Mini_CRM_Blazor.Server.Services
 
         public async Task<BaseResponse<CompanySubscriberDto>> Add(CompanySubscriberCreateRequest model)
         {
-            // Verificar se o CPF já está em uso (opcional, dependendo dos requisitos)
-            //var cpfExists = await _companySubscribersRepository.VerificarCpfExistente(model.Cpf);
-            //if (cpfExists)
-            //{
-            //    return new BaseResponse<CompanySubscriberDto>("CPF já cadastrado.");
-            //}
-
-            var companySubscriber= new CompanySubscriber
+            var companySubscriber = new CompanySubscriber
             {
                 TradingName = model.TradingName,
                 CompanyName = model.CompanyName,
                 Description = model.Description,
                 AreaOfBusiness = model.AreaOfBusiness,
-                Website = model.Website,
+                Email = model.Email,
+                Website = model.Website
             };
 
-            var createdCompanySubscriber = await _companySubscribersRepository.Add(companySubscriber);
+            var user = await _applicationUsersRepository.GetByEmail(model.ManagerEmail);
+            if(user == null)
+                return new BaseResponse<CompanySubscriberDto>("Add an existing user email.");
+
+            var previousRoles = await _applicationUsersRepository.GetRolesFromUser(user);
+            if (previousRoles.Count != 0)
+                return new BaseResponse<CompanySubscriberDto>("User already in a organization.");
+
+            var createdCompanySubscriber = await _companySubscribersRepository.Add(companySubscriber, user);
 
             if (createdCompanySubscriber == null)
             {

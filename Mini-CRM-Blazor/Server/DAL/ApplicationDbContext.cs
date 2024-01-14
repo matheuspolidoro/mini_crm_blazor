@@ -13,7 +13,6 @@ namespace Mini_CRM_Blazor.Server.DAL
         public DbSet<CompanySubscriber> CompanySubscribers { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Supplier> Suppliers { get; set; }
-        public DbSet<AssociateMember> AssociateMembers { get; set; }
         public DbSet<Contract> Contracts { get; set; }
         public DbSet<CustomerContact> CustomerContacts { get; set; }
     }

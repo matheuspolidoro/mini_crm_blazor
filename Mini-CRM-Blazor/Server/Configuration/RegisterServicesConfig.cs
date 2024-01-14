@@ -7,6 +7,7 @@ namespace Mini_CRM_Blazor.Server.Configuration
         public static IServiceCollection RegisterServices(this IServiceCollection services)
         {
             services.AddScoped<CompanySubscribersService>();
+            services.AddScoped<ApplicationUsersService>();
             services.AddScoped<CustomersService>();
 
             return services;

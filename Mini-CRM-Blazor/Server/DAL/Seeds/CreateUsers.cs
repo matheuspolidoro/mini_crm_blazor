@@ -56,14 +56,14 @@ namespace Mini_CRM_Blazor.Server.DAL.Seeds
                     Website = "www.xpto.com",
                     AreaOfBusiness = "Technology",
                     Description = "A good description here",
-                    AssociateMembers = new List<AssociateMember>
+                    ApplicationUsers = new List<ApplicationUser>
                     {
-                        new AssociateMember
+                        new ApplicationUser
                         {
-                            Id = Guid.NewGuid(),
+                            Id = Guid.NewGuid().ToString(),
                             Email = "member1@xpto.com",
                             PhoneNumber = "1234567890",
-                            Name = "Julio Almeida",
+                            UserName = "Julio Almeida",
                             Position = "Position A"
                         }
                     }

@@ -36,22 +36,32 @@ namespace Mini_CRM_Blazor.Server.Services
 
         public async Task<BaseResponse<CustomerDto>> Add(CustomerCreateRequest model)
         {
-            // Verificar se o CPF já está em uso (opcional, dependendo dos requisitos)
-            //var cpfExists = await _customersRepository.VerificarCpfExistente(model.Cpf);
-            //if (cpfExists)
-            //{
-            //    return new BaseResponse<CustomerDto>("CPF já cadastrado.");
-            //}
-
             var customer = new Customer
             {
+                CompanySubscriberId = model.CompanySubscriberId,
                 TradingName = model.TradingName,
                 CompanyName = model.CompanyName,
                 Description = model.Description,
                 AreaOfBusiness = model.AreaOfBusiness,
                 Website = model.Website,
-                CustomerContacts = _mapper.Map<CustomerContact[]>(model.CustomerContacts)
             };
+
+            var contacts = new List<CustomerContact>();
+
+            if (model.Email != null)
+                contacts.Add(new CustomerContact {
+                    ContactInfo = model.Email,
+                    TypeContact = Shared.Enums.TypeContacts.Email,
+                });
+
+            if (model.PhoneNumber != null)
+                contacts.Add(new CustomerContact
+                {
+                    ContactInfo = model.Email,
+                    TypeContact = Shared.Enums.TypeContacts.Email
+                });
+            
+            customer.CustomerContacts = contacts;
 
             var createdCustomer = await _customersRepository.Add(customer);
 

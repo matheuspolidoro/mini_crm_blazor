@@ -1,7 +1,7 @@
 ﻿
 namespace Mini_CRM_Blazor.Shared.Dtos
 {
-    public class AssociateMemberDto
+    public class ApplicationUserDto
     {
         public Guid Id { get; set; }
         public String ApplicationUserId { get; set; }

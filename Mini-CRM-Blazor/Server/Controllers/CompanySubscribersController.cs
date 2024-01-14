@@ -7,11 +7,11 @@ namespace Mini_CRM_Blazor.Server.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class CompanySubscriberController : ControllerBase
+    public class CompanySubscribersController : ControllerBase
     {
         private readonly CompanySubscribersService _service;
 
-        public CompanySubscriberController(CompanySubscribersService service)
+        public CompanySubscribersController(CompanySubscribersService service)
         {
             _service = service;
         }
@@ -48,13 +48,34 @@ namespace Mini_CRM_Blazor.Server.Controllers
             }
         }
 
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> Post([FromBody] CompanySubscriberCreateRequest model)
+        {
+            if (!ModelState.IsValid)
+                return UnprocessableEntity(ModelState);
+
+            try
+            {
+                var result = await _service.Add(model);
+                if (!result.Sucess)
+                    return BadRequest(result.Message);
+
+                return Ok(result.Content);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }            
+        }
+
         //[HttpPut("{id}")]
         //[Authorize(Roles = "1, 3")]
         //public async Task<IActionResult> Put(int id, [FromBody] CompanySubscriberUpdateRequest updateModel)
         //{
         //    if (!ModelState.IsValid)
         //        return UnprocessableEntity(ModelState);
-             
+
         //    var result = await _service.Update(id, updateModel);
 
         //    try

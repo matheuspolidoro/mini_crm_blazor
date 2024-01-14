@@ -1,37 +1,44 @@
-﻿@page "/customers"
+﻿@page "/in/dashboard/customers"
 @layout Dashboard
 
+@using Mini_CRM_Blazor.Client.Shared
 @using Mini_CRM_Blazor.Shared.Models
 @using MudBlazor
 
+@inject IDialogService DialogService
 @inject HttpClient httpClient
 
-<MudTable ServerData="@(new Func<TableState, Task<TableData<CustomerDto>>>(ServerReload))"
-          Dense="true" Hover="true" @ref="table">
-    <ToolBarContent>
-        <MudText Typo="Typo.h6">Customers</MudText>
-        <MudSpacer />
-        <MudTextField T="string" ValueChanged="@(s => OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
-                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-    </ToolBarContent>
-    <HeaderContent>
-        <MudTh><MudTableSortLabel SortLabel="TradingName" T="CustomerDto">Trading name</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortLabel="AreaOfBusiness" T="CustomerDto">Area of business</MudTableSortLabel></MudTh>
-    </HeaderContent>
-    <RowTemplate>
-        <MudTd DataLabel="TradingName">@context.TradingName</MudTd>
-            <MudTd DataLabel="AreaOfBusiness">@context.AreaOfBusiness</MudTd>
-        </RowTemplate>
-        <NoRecordsContent>
-            <MudText>No matching records found</MudText>
-        </NoRecordsContent>
-        <LoadingContent>
-            <MudText>Loading...</MudText>
-        </LoadingContent>
-        <PagerContent>
-            <MudTablePager />
-        </PagerContent>
-    </MudTable>
+<MudContainer Class="d-flex flex-column pv-16" MaxWidth="MaxWidth.False" Style=@($"background: {Colors.Indigo.Lighten5}; height: 100vh; padding-top: 64px;")>
+    <MudButton Class="mb-4" Style="width: fit-content; align-self: self-end;" Variant="Variant.Filled" Color="Color.Primary" @onclick="OpenDialog">
+        Add customer
+    </MudButton>
+    <MudTable ServerData="@(new Func<TableState, Task<TableData<CustomerDto>>>(ServerReload))"
+              Dense="true" Hover="true" @ref="table">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Customers</MudText>
+            <MudSpacer />
+            <MudTextField T="string" ValueChanged="@(s => OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh><MudTableSortLabel SortLabel="TradingName" T="CustomerDto">Trading name</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="AreaOfBusiness" T="CustomerDto">Area of business</MudTableSortLabel></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="TradingName">@context.TradingName</MudTd>
+                <MudTd DataLabel="AreaOfBusiness">@context.AreaOfBusiness</MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText>No matching records found</MudText>
+            </NoRecordsContent>
+            <LoadingContent>
+                <MudText>Loading...</MudText>
+            </LoadingContent>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </MudContainer>
 
     @code {
     private IEnumerable<CustomerDto> pagedData;
@@ -77,6 +84,16 @@
     {
         searchString = text;
         table.ReloadServerData();
+    }
+
+    private async void OpenDialog()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        var dialog = DialogService.Show<AddCustomerDialog>("Add new customer", options);
+
+        var result = await dialog.Result;
+        if (result.Data != null)
+            await table.ReloadServerData();
     }
 
     public List<CustomerDto> CustomerList { get; set; } = new List<CustomerDto>

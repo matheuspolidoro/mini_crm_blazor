@@ -48,23 +48,25 @@ namespace Mini_CRM_Blazor.Server.Controllers
             }
         }
 
-        //[HttpPut("{id}")]
-        //[Authorize(Roles = "1, 3")]
-        //public async Task<IActionResult> Put(int id, [FromBody] CustomerUpdateRequest updateModel)
-        //{
-        //    if (!ModelState.IsValid)
-        //        return UnprocessableEntity(ModelState);
-             
-        //    var result = await _service.Update(id, updateModel);
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> Post([FromBody] CustomerCreateRequest model)
+        {
+            if (!ModelState.IsValid)
+                return UnprocessableEntity(ModelState);
 
-        //    try
-        //    {
-        //        return Ok(result);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(ex.Message);
-        //    }
-        //}
+            try
+            {
+                var result = await _service.Add(model);
+                if (!result.Sucess)
+                    return BadRequest(result.Message);
+
+                return Ok(result.Content);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

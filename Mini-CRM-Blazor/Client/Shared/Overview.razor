@@ -1,4 +1,4 @@
-﻿@page "/dashboard/overview"
+﻿@page "/in/dashboard/overview"
 
 @layout Dashboard
 
@@ -6,17 +6,17 @@
 @using Mini_CRM_Blazor.Shared.Dtos
 @using MudBlazor
 
-<MudContainer>
-    <MudCard Elevation="0">
-        <MudCardHeader>
-            <CardHeaderContent>
-                <MudText Typo="Typo.h6">Contracts</MudText>
-            </CardHeaderContent>
-            <CardHeaderActions>
-                <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" />
-            </CardHeaderActions>
-        </MudCardHeader>
-        <MudTable Items="@ContractList.Take(3)" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info">
+<MudCard Elevation="0">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">CONTRACTS</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" />
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudTable Elevation="0" Items="@ContractList.Take(3)" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info">
             <HeaderContent>
                 <MudTh>Customer</MudTh>
                 <MudTh>Associate</MudTh>
@@ -28,11 +28,13 @@
                     <MudTd DataLabel="Status">@context.Status</MudTd>
                 </RowTemplate>
             </MudTable>
-        </MudCard>
-    </MudContainer>
+        </MudCardContent>
+        <MudCardActions>
+            <MudButton Variant="Variant.Text" Color="Color.Primary">Check all</MudButton>
+        </MudCardActions>
+    </MudCard>
 
-@code
-{
+@code {
     private bool _loading = false;
 
     public List<ContractDto> ContractList { get; set; } = new List<ContractDto>

@@ -1,0 +1,92 @@
+﻿@using Microsoft.AspNetCore.Components.Forms
+@using Mini_CRM_Blazor.Shared.Dtos
+@using Mini_CRM_Blazor.Shared.Models
+@using MudBlazor
+
+@inject NavigationManager navigationManager
+@inject HttpClient httpClient
+@inject CompanySubscriberService companyService
+
+<MudDialog>
+    <DialogContent>
+        <EditForm Model="registerRequest" OnValidSubmit="OnSubmit">
+            <DataAnnotationsValidator />
+
+            <MudCard Elevation="0">
+                <MudCardContent>
+                    <MudTextField Label="Company name"
+                                  HelperText="Max. 8 characters"
+                                  @bind-Value="registerRequest.CompanyName"
+                                  For="@(() => registerRequest.CompanyName)" />
+                    <ValidationMessage For="@(() => registerRequest.CompanyName)" />
+                    <MudTextField Label="Trading name"
+                                  Class="mt-3"
+                                  @bind-Value="registerRequest.TradingName"
+                                  For="@(() => registerRequest.TradingName)" />
+                    <ValidationMessage For="@(() => registerRequest.TradingName)" />
+                    <MudTextField Label="Area Of Business"
+                                  Class="mt-3"
+                                  @bind-Value="registerRequest.AreaOfBusiness"
+                                  For="@(() => registerRequest.AreaOfBusiness)" />
+                    <ValidationMessage For="@(() => registerRequest.AreaOfBusiness)" />
+                    <MudTextField Label="Company email"
+                                  Class="mt-3"
+                                  @bind-Value="registerRequest.Email"
+                                  For="@(() => registerRequest.Email)"
+                                  InputType="InputType.Email" />
+                    <ValidationMessage For="@(() => registerRequest.Email)" />
+                    <MudDivider  Class="mt-4"/>
+                    <MudText>Set a valid user email to manage the subscription.</MudText>
+                    <MudTextField Label="Manager email"
+                                  Class="mt-3"
+                                  @bind-Value="registerRequest.ManagerEmail"
+                                  For="@(() => registerRequest.ManagerEmail)"
+                                  InputType="InputType.Email" />
+                    <ValidationMessage For="@(() => registerRequest.ManagerEmail)" />
+                </MudCardContent>
+
+            </MudCard>
+        </EditForm>
+        @if(error != null)
+        {
+            <MudAlert Severity="Severity.Error" ContentAlignment="HorizontalAlignment.Start">@(error.Any() ? error : "Could not proceed adding new subscription")</MudAlert>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+
+        <MudButton ButtonType="ButtonType.Submit"
+                   Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   DisableElevation="true"
+                   Class="ml-auto"
+                   OnClick="OnSubmit">Create subscription</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    CompanySubscriberCreateRequest registerRequest { get; set; } = new CompanySubscriberCreateRequest();
+    string error { get; set; }
+
+    async Task OnSubmit()
+    {
+        error = null;
+        try
+        {
+            var data = await httpClient.PostAsJsonAsync<CompanySubscriberCreateRequest>("api/CompanySubscribers/Post", registerRequest);
+            if (data.IsSuccessStatusCode)
+            {
+                MudDialog.Close(DialogResult.Ok(true));
+            }
+            error = data.RequestMessage.ToString();
+
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+        }
+    }
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    void Cancel() => MudDialog.Cancel();
+}

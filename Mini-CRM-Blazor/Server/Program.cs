@@ -16,7 +16,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFramework
 
 builder.Services.RegisterServices();
 builder.Services.RegisterRepositories();
-builder.Services.RegisterAutoMapper();
+builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.ConfigureApplicationCookie(options =>
 {

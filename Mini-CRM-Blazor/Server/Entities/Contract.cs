@@ -14,10 +14,10 @@ namespace Mini_CRM_Blazor.Server.Models
         public virtual Customer Customer { get; set; }
         
         [Required]
-        public Guid AssociateMemberId { get; set; }
+        public string ApplicationUserId { get; set; }
 
-        [ForeignKey("AssociateMemberId")]
-        public virtual AssociateMember AssociateMember { get; set; }
+        [ForeignKey("ApplicationUserId")]
+        public virtual ApplicationUser ApplicationUser { get; set; }
 
         [Required]
         public virtual int StatusId

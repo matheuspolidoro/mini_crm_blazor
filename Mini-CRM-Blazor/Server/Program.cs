@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
+using Mini_CRM_Blazor.Server.Configuration;
 using Mini_CRM_Blazor.Server.DAL;
+using Mini_CRM_Blazor.Server.DAL.Seeds;
 using Mini_CRM_Blazor.Server.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,8 +11,12 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<ApplicationDBContext>(options => options.UseNpgsql(connectionString));
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDBContext>();
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.RegisterServices();
+builder.Services.RegisterRepositories();
+builder.Services.RegisterAutoMapper();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
@@ -29,6 +34,12 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseWebAssemblyDebugging();
+
+
+    using (var scope = app.Services.CreateScope())
+    {
+        CreateUsers.CreateRoles(scope.ServiceProvider, builder).Wait();
+    }
 }
 else
 {
@@ -36,19 +47,17 @@ else
     app.UseHsts();
 }
 
+//var serviceProvider = app.Services.GetService<IServiceProvider>();
+//CreateRoles(serviceProvider, builder).Wait();
+
 app.UseHttpsRedirection();
-app.UseAuthentication();
-app.UseAuthorization();
 app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
 
 app.UseRouting();
-app.UseCors(cors => cors
-                .AllowAnyMethod()
-                .AllowAnyHeader()
-                .SetIsOriginAllowed(origin => true)
-                .AllowCredentials()
-            );
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapRazorPages();
 app.MapControllers();

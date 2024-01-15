@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Mini_CRM_Blazor.Shared.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Mini_CRM_Blazor.Server.Models
@@ -9,7 +10,9 @@ namespace Mini_CRM_Blazor.Server.Models
         public Guid Id { get; set; }
         [Required]
         public Guid CustomerId { get; set; }
-        
+        public string? PersonResponsibleName { get; set; }
+        public string? Sector { get; set; }
+
         [ForeignKey("CustomerId")]
         public virtual Customer Customer { get; set; }
         
@@ -30,11 +33,5 @@ namespace Mini_CRM_Blazor.Server.Models
 
         [EnumDataType(typeof(TypeContacts))]
         public TypeContacts TypeContact { get; set; }
-
-        public enum TypeContacts
-        {
-            Email = 0,
-            PhoneNumber = 1
-        }
     }
 }

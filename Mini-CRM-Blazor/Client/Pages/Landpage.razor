@@ -3,21 +3,17 @@
 @using Mini_CRM_Blazor.Client.Shared
 @using MudBlazor
 
-<MudPaper Height="100vh"
+@inject CustomStateProvider authStateProvider
+@inject NavigationManager navigationManager
+
+<MudPaper MinHeight="100vh"
           Width="100%"
           Class="pa-16 d-flex flex-column align-items-center"
-          Style=@($"gap: 16px; background: {Colors.Indigo.Lighten5}")>
-    <MudPaper Class="pa-12" Elevation="0" Style=@($"align-self: flex-start")>
-        <MudText Typo="Typo.h3" Align="Align.Center" GutterBottom="true">Mini CRM</MudText>
-    </MudPaper>
+          Style=@($"gap: 16px; background: {Colors.Indigo.Lighten5}")
+          Elevation="0">
     <MudContainer MaxWidth="MaxWidth.Small">
-        <MudText Align="Align.Center">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec est quam, ullamcorper vitae dapibus sed, elementum vitae sapien.</MudText>
         <MudCard Elevation="0" Class="rounded-sm my-4">
-            @*<MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h5" Align="Align.Center">Starter</MudText>
-                </CardHeaderContent>
-            </MudCardHeader>*@
+            <MudCardMedia Image="images/mini_crm_logo_crop.png" Height="200" />
             <MudCardContent>
                 @if (_isSignInMode)
                 {
@@ -51,11 +47,6 @@
             </MudCardActions>
         </MudCard>
     </MudContainer>
-    <MudLink Href="#"
-             Typo="Typo.body2"
-             Align="Align.Center">
-        Log in as MiniCRM admin
-    </MudLink>
 </MudPaper>
 
 @code {
@@ -63,15 +54,22 @@
     bool _isCustomerLogInForm = false;
     bool _isSignInMode = true;
 
+    [CascadingParameter]
+    Task<AuthenticationState> AuthenticationState { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var authState = await AuthenticationState;
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            navigationManager.NavigateTo("/in");
+        }
+    }
+
     private void SwitchCustomerSignInSignUp()
     {
         _isSignInMode = !_isSignInMode;
-    }
-
-    private void LogInAsMiniCRMAdmin()
-    {
-        _drawerOpen = !_drawerOpen;
-        _isCustomerLogInForm = !_isCustomerLogInForm;
-        // NavManager.NavigateTo("/");
     }
 }

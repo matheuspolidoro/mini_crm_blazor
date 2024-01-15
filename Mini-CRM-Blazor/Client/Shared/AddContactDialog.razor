@@ -1,0 +1,82 @@
+﻿@using Microsoft.AspNetCore.Components.Forms
+@using Mini_CRM_Blazor.Shared.Dtos
+@using Mini_CRM_Blazor.Shared.Models
+@using MudBlazor
+
+@inject NavigationManager navigationManager
+@inject HttpClient httpClient
+
+<MudDialog>
+    <DialogContent>
+        <EditForm Model="registerRequest" OnValidSubmit="OnSubmit">
+            <DataAnnotationsValidator />
+
+            <MudCard Elevation="0">
+                <MudCardContent>
+                    <MudTextField Label="Sector"
+                                  @bind-Value="registerRequest.Sector"
+                                  For="@(() => registerRequest.Sector)" />
+                    <ValidationMessage For="@(() => registerRequest.Sector)" />
+                    <MudTextField Label="Representative person"
+                                  Class="mt-3"
+                                  @bind-Value="registerRequest.PersonResponsibleName"
+                                  For="@(() => registerRequest.PersonResponsibleName)" />
+                    <ValidationMessage For="@(() => registerRequest.PersonResponsibleName)" />
+                    <MudTextField Label="Contact"
+                                  Class="mt-3"
+                                  @bind-Value="registerRequest.ContactInfo"
+                                  For="@(() => registerRequest.ContactInfo)" />
+                    <ValidationMessage For="@(() => registerRequest.ContactInfo)" />
+                    <MudRadioGroup @bind-Value="registerRequest.TypeContactId" T="int" Required="true" RequiredError="Contact type is required.">
+                        <MudRadio Value="@(0)">Email</MudRadio>
+                        <MudRadio Value="@(1)">Phone Number</MudRadio>
+                    </MudRadioGroup>
+                </MudCardContent>
+            </MudCard>
+        </EditForm>
+        @if(error != null)
+        {
+            <MudAlert Severity="Severity.Error" ContentAlignment="HorizontalAlignment.Start">Could not proceed adding new subscription</MudAlert>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+
+        <MudButton ButtonType="ButtonType.Submit"
+                   Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   DisableElevation="true"
+                   Class="ml-auto"
+                   OnClick="OnSubmit">Create contact</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    CustomerContactCreateRequest registerRequest { get; set; } = new CustomerContactCreateRequest();
+    [Parameter] public Guid CustomerId { get; set; }
+
+    string error { get; set; }
+
+    async Task OnSubmit()
+    {
+        error = null;
+        try
+        {
+            registerRequest.CustomerId = CustomerId;
+            var data = await httpClient.PostAsJsonAsync<CustomerContactCreateRequest>("api/CustomerContacts/Post", registerRequest);
+            if (data.IsSuccessStatusCode)
+            {
+                MudDialog.Close(DialogResult.Ok(true));
+            }
+            error = data.RequestMessage.ToString();
+
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+        }
+    }
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    void Cancel() => MudDialog.Cancel();
+}

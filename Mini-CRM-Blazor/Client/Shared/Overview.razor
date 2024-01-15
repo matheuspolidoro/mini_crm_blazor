@@ -1,0 +1,82 @@
+﻿@page "/in/dashboard/overview"
+
+@layout Dashboard
+
+@using Mini_CRM_Blazor.Client.Pages
+@using Mini_CRM_Blazor.Shared.Dtos
+@using MudBlazor
+
+<MudCard Elevation="0">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">CONTRACTS</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" />
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudTable Elevation="0" Items="@ContractList.Take(3)" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info">
+            <HeaderContent>
+                <MudTh>Customer</MudTh>
+                <MudTh>Associate</MudTh>
+                <MudTh>Status</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="CustomerName">@context.CustomerName</MudTd>
+                    <MudTd DataLabel="AssociateMemberName">@context.AssociateMemberName</MudTd>
+                    <MudTd DataLabel="Status">@context.Status</MudTd>
+                </RowTemplate>
+            </MudTable>
+        </MudCardContent>
+        <MudCardActions>
+            <MudButton Variant="Variant.Text" Color="Color.Primary">Check all</MudButton>
+        </MudCardActions>
+    </MudCard>
+
+@code {
+    private bool _loading = false;
+
+    public List<ContractDto> ContractList { get; set; } = new List<ContractDto>
+    {
+        new ContractDto
+        {
+            Id = Guid.NewGuid(),
+            CustomerId = Guid.NewGuid(),
+            CustomerName = "Customer A",
+            AssociateMemberId = Guid.NewGuid(),
+            AssociateMemberName = "Julio Almeida",
+            Status = "Leads",
+            StatusId = 1,
+        },
+        new ContractDto
+        {
+            Id = Guid.NewGuid(),
+            CustomerId = Guid.NewGuid(),
+            CustomerName = "Customer B",
+            AssociateMemberId = Guid.NewGuid(),
+            AssociateMemberName = "Julio Almeida",
+            Status = "Follow up",
+            StatusId = 3,
+        },
+        new ContractDto
+        {
+            Id = Guid.NewGuid(),
+            CustomerId = Guid.NewGuid(),
+            CustomerName = "Customer C",
+            AssociateMemberId = Guid.NewGuid(),
+            AssociateMemberName = "John Mark",
+            Status = "Sale",
+            StatusId = 4,
+        }
+    };
+
+    private async Task<List<ContractDto>> GetContracts(Guid subscriberId)
+    {
+        //IEnumerable<ContractDto> data = await httpClient.GetFromJsonAsync<List<ContractDto>>("api/customer");
+        //IEnumerable<ContractDto> data = CustomerList;
+        await Task.Delay(1000);
+
+        return new List<ContractDto>();
+    }
+}

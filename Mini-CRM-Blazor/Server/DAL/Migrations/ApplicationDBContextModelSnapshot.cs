@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace MiniCRMBlazor.Server.DAL.Migrations
 {
-    [DbContext(typeof(ApplicationDBContext))]
+    [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDBContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
@@ -162,6 +162,9 @@ namespace MiniCRMBlazor.Server.DAL.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("integer");
 
+                    b.Property<Guid?>("CompanySubscriberId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("text");
@@ -196,6 +199,9 @@ namespace MiniCRMBlazor.Server.DAL.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("Position")
+                        .HasColumnType("text");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
 
@@ -208,6 +214,8 @@ namespace MiniCRMBlazor.Server.DAL.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CompanySubscriberId");
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -216,45 +224,6 @@ namespace MiniCRMBlazor.Server.DAL.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("Mini_CRM_Blazor.Server.Models.AssociateMember", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("ApplicationUserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("CompanySubscriberId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Position")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ApplicationUserId");
-
-                    b.HasIndex("CompanySubscriberId");
-
-                    b.ToTable("AssociateMembers");
                 });
 
             modelBuilder.Entity("Mini_CRM_Blazor.Server.Models.CompanySubscriber", b =>
@@ -272,7 +241,6 @@ namespace MiniCRMBlazor.Server.DAL.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Email")
@@ -280,15 +248,12 @@ namespace MiniCRMBlazor.Server.DAL.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("PhoneNumber")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("TradingName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Website")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -302,11 +267,18 @@ namespace MiniCRMBlazor.Server.DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("AssociateMemberId")
-                        .HasColumnType("uuid");
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uuid");
+
+                    b.Property<DateTime>("DateLastUpdate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("DateStart")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -316,7 +288,7 @@ namespace MiniCRMBlazor.Server.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AssociateMemberId");
+                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("CustomerId");
 
@@ -341,15 +313,12 @@ namespace MiniCRMBlazor.Server.DAL.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("TradingName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Website")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -371,6 +340,12 @@ namespace MiniCRMBlazor.Server.DAL.Migrations
 
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uuid");
+
+                    b.Property<string>("PersonResponsibleName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Sector")
+                        .HasColumnType("text");
 
                     b.Property<int>("TypeContact")
                         .HasColumnType("integer");
@@ -403,7 +378,6 @@ namespace MiniCRMBlazor.Server.DAL.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Email")
@@ -411,15 +385,12 @@ namespace MiniCRMBlazor.Server.DAL.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("PhoneNumber")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("TradingName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Website")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -480,7 +451,16 @@ namespace MiniCRMBlazor.Server.DAL.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Mini_CRM_Blazor.Server.Models.AssociateMember", b =>
+            modelBuilder.Entity("Mini_CRM_Blazor.Server.Models.ApplicationUser", b =>
+                {
+                    b.HasOne("Mini_CRM_Blazor.Server.Models.CompanySubscriber", "CompanySubscriber")
+                        .WithMany("ApplicationUsers")
+                        .HasForeignKey("CompanySubscriberId");
+
+                    b.Navigation("CompanySubscriber");
+                });
+
+            modelBuilder.Entity("Mini_CRM_Blazor.Server.Models.Contract", b =>
                 {
                     b.HasOne("Mini_CRM_Blazor.Server.Models.ApplicationUser", "ApplicationUser")
                         .WithMany()
@@ -488,32 +468,13 @@ namespace MiniCRMBlazor.Server.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Mini_CRM_Blazor.Server.Models.CompanySubscriber", "CompanySubscriber")
-                        .WithMany("AssociateMembers")
-                        .HasForeignKey("CompanySubscriberId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ApplicationUser");
-
-                    b.Navigation("CompanySubscriber");
-                });
-
-            modelBuilder.Entity("Mini_CRM_Blazor.Server.Models.Contract", b =>
-                {
-                    b.HasOne("Mini_CRM_Blazor.Server.Models.AssociateMember", "AssociateMember")
-                        .WithMany()
-                        .HasForeignKey("AssociateMemberId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Mini_CRM_Blazor.Server.Models.Customer", "Customer")
-                        .WithMany()
+                        .WithMany("Contracts")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("AssociateMember");
+                    b.Navigation("ApplicationUser");
 
                     b.Navigation("Customer");
                 });
@@ -553,7 +514,7 @@ namespace MiniCRMBlazor.Server.DAL.Migrations
 
             modelBuilder.Entity("Mini_CRM_Blazor.Server.Models.CompanySubscriber", b =>
                 {
-                    b.Navigation("AssociateMembers");
+                    b.Navigation("ApplicationUsers");
 
                     b.Navigation("Customers");
 
@@ -562,6 +523,8 @@ namespace MiniCRMBlazor.Server.DAL.Migrations
 
             modelBuilder.Entity("Mini_CRM_Blazor.Server.Models.Customer", b =>
                 {
+                    b.Navigation("Contracts");
+
                     b.Navigation("CustomerContacts");
                 });
 #pragma warning restore 612, 618

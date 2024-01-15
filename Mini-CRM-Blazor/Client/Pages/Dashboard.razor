@@ -53,7 +53,7 @@
 
         var claim = user.Claims.Where(c => c.Type == "CompanySubscriber").FirstOrDefault();
 
-        if (claim != null)
+        if (claim != null && claim.Value.Length != 0)
             await companyService.GetCompany(Guid.Parse(claim.Value));
     }
 

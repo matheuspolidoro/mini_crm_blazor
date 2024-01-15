@@ -1,0 +1,136 @@
+﻿@page "/in/dashboard/customers/{CustomerId}"
+@using Mini_CRM_Blazor.Client.Shared
+@using Mini_CRM_Blazor.Shared.Dtos
+@using Mini_CRM_Blazor.Shared.Models
+@using MudBlazor
+
+@layout Dashboard
+
+@inject IDialogService DialogService
+@inject NavigationManager navigationManager
+@inject CustomerService customerService
+
+
+<MudContainer Class="d-flex flex-column pv-16" MaxWidth="MaxWidth.False" Style=@($"background: {Colors.Indigo.Lighten5}; height: 100vh; padding-top: 64px;")>
+    <MudButton Class="mb-4" Style="width: fit-content; align-self: self-end;" Variant="Variant.Filled" Color="Color.Primary" @onclick="OpenDialog">
+        Add contact
+    </MudButton>
+    <MudTable  Dense="true" Hover="true" ServerData="@(new Func<TableState, Task<TableData<CustomerContactDto>>>(ServerReload))"
+              @ref="table" T="CustomerContactDto">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Contacts</MudText>
+            <MudSpacer />
+            <MudTextField T="string" ValueChanged="@(s => OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small" Class="mt-0"></MudTextField>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh><MudTableSortLabel SortLabel="Sector" T="CustomerContactDto">Sector</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="TypeContact" T="CustomerContactDto">Type</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="ContactInfo" T="CustomerContactDto">Contact info</MudTableSortLabel></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Sector">@context.Sector</MudTd>
+                <MudTd DataLabel="TypeContact">@context.TypeContact</MudTd>
+                <MudTd DataLabel="ContactInfo">@context.ContactInfo</MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText>No matching records found</MudText>
+            </NoRecordsContent>
+            <LoadingContent>
+                <MudText>Loading...</MudText>
+            </LoadingContent>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </MudContainer>
+
+
+    @code {
+    [Parameter]
+    public string CustomerId { get; set; }
+    public CustomerDto Customer { get; set; }
+
+    private IEnumerable<CustomerContactDto> pagedData;
+    private MudTable<CustomerContactDto> table;
+    private int totalItems;
+    private string searchString = null;
+
+    protected override void OnInitialized()
+    {
+        CustomerId = CustomerId ?? Guid.Empty.ToString();
+
+        if(String.IsNullOrEmpty(CustomerId))
+        {
+            navigationManager.NavigateTo("/in/dashboard/customers");
+            return;
+        }
+
+        customerService.OnChange += StateHasChanged;
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Customer = await customerService.GetCustomerById(Guid.Parse(CustomerId));
+    }
+
+    public void Dispose()
+    {
+        customerService.OnChange -= StateHasChanged;
+    }
+
+    private async Task<TableData<CustomerContactDto>> ServerReload(TableState state)
+    {
+        var customer = await customerService.GetCustomerById(Guid.Parse(CustomerId));
+
+        IEnumerable<CustomerContactDto> data = customer.CustomerContacts;
+
+        data = data.Where(element =>
+        {
+            if (string.IsNullOrWhiteSpace(searchString))
+                return true;
+            if (element.Sector.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                return true;
+            if (element.PersonResponsibleName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                return true;
+            return false;
+        }).ToArray();
+
+        totalItems = data.Count();
+
+        switch (state.SortLabel)
+        {
+            case "Sector":
+                data = data.OrderByDirection(state.SortDirection, o => o.Sector);
+                break;
+            case "TypeContact":
+                data = data.OrderByDirection(state.SortDirection, o => o.TypeContact);
+                break;
+        }
+
+        pagedData = data.Skip(state.Page * state.PageSize).Take(state.PageSize).ToArray();
+        return new TableData<CustomerContactDto>() { TotalItems = totalItems, Items = pagedData };
+    }
+
+    private async Task OnSearch(string text)
+    {
+        searchString = text;
+        await customerService.GetCustomerById(Guid.Parse(CustomerId));
+        await table.ReloadServerData();
+    }
+
+    private async void OpenDialog()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+
+        var parameters = new DialogParameters<AddContactDialog>();
+        parameters.Add("CustomerId", Customer.Id);
+
+        var dialog = DialogService.Show<AddContactDialog>("Add new contact info", parameters, options);
+
+        var result = await dialog.Result;
+        if (result.Data != null)
+            await table.ReloadServerData();
+    }
+
+}

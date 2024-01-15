@@ -8,6 +8,7 @@ namespace Mini_CRM_Blazor.Server.DAL
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
+            Database.EnsureCreated();
         }
 
         public DbSet<CompanySubscriber> CompanySubscribers { get; set; }

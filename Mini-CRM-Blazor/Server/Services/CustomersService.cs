@@ -52,15 +52,17 @@ namespace Mini_CRM_Blazor.Server.Services
                 contacts.Add(new CustomerContact {
                     ContactInfo = model.Email,
                     TypeContact = Shared.Enums.TypeContacts.Email,
+                    Sector = "Main email"
                 });
 
             if (model.PhoneNumber != null)
                 contacts.Add(new CustomerContact
                 {
-                    ContactInfo = model.Email,
-                    TypeContact = Shared.Enums.TypeContacts.Email
+                    ContactInfo = model.PhoneNumber,
+                    TypeContact = Shared.Enums.TypeContacts.PhoneNumber,
+                    Sector = "Main phone number"
                 });
-            
+
             customer.CustomerContacts = contacts;
 
             var createdCustomer = await _customersRepository.Add(customer);

@@ -7,6 +7,8 @@ namespace Mini_CRM_Blazor.Shared.Dtos
     {
         public Guid Id { get; set; }
         public string ContactInfo { get; set; }
+        public string? PersonResponsibleName { get; set; }
+        public string? Sector { get; set; }
         public TypeContacts TypeContact { get; set; }
     }
 }

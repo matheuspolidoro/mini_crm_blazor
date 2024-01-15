@@ -10,7 +10,9 @@ namespace Mini_CRM_Blazor.Server.Models
         public Guid Id { get; set; }
         [Required]
         public Guid CustomerId { get; set; }
-        
+        public string? PersonResponsibleName { get; set; }
+        public string? Sector { get; set; }
+
         [ForeignKey("CustomerId")]
         public virtual Customer Customer { get; set; }
         

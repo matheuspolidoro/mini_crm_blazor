@@ -7,13 +7,15 @@
 
 @inject IDialogService DialogService
 @inject HttpClient httpClient
+@inject NavigationManager navigationManager
+@inject CompanySubscriberService companyService
 
 <MudContainer Class="d-flex flex-column pv-16" MaxWidth="MaxWidth.False" Style=@($"background: {Colors.Indigo.Lighten5}; height: 100vh; padding-top: 64px;")>
     <MudButton Class="mb-4" Style="width: fit-content; align-self: self-end;" Variant="Variant.Filled" Color="Color.Primary" @onclick="OpenDialog">
         Add customer
     </MudButton>
-    <MudTable ServerData="@(new Func<TableState, Task<TableData<CustomerDto>>>(ServerReload))"
-              Dense="true" Hover="true" @ref="table">
+    <MudTable RowClass="cursor-pointer" Dense="true" Hover="true" ServerData="@(new Func<TableState, Task<TableData<CustomerDto>>>(ServerReload))"
+              @ref="table" T="CustomerDto" OnRowClick="RowClickEvent">
         <ToolBarContent>
             <MudText Typo="Typo.h6">Customers</MudText>
             <MudSpacer />
@@ -49,9 +51,10 @@
 
     private async Task<TableData<CustomerDto>> ServerReload(TableState state)
     {
-        //IEnumerable<CustomerDto> data = await httpClient.GetFromJsonAsync<List<CustomerDto>>("api/customer");
-        IEnumerable<CustomerDto> data = CustomerList;
-        await Task.Delay(2000);
+        var company = companyService.CompanySubscriberDto;
+        IEnumerable<CustomerDto> data = await httpClient.GetFromJsonAsync<List<CustomerDto>>($"api/Customers/GetAllByCompanySubscriberId/{company.Id}");
+        //IEnumerable<CustomerDto> data = CustomerList;
+        await Task.Delay(1000);
 
         data = data.Where(element =>
         {
@@ -85,6 +88,12 @@
         searchString = text;
         table.ReloadServerData();
     }
+
+    private void RowClickEvent(TableRowClickEventArgs<CustomerDto> selectedCustomer)
+    {
+        navigationManager.NavigateTo($"/in/dashboard/customers/{selectedCustomer.Item.Id}");        
+    }
+
 
     private async void OpenDialog()
     {

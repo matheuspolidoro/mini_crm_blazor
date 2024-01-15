@@ -9,6 +9,7 @@ namespace Mini_CRM_Blazor.Server.Configuration
             services.AddScoped<CompanySubscribersRepository>();
             services.AddScoped<ApplicationUsersRepository>();
             services.AddScoped<CustomersRepository>();
+            services.AddScoped<CustomerContactsRepository>();
 
             return services;
         }

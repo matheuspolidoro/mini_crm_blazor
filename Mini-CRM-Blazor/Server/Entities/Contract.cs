@@ -16,6 +16,11 @@ namespace Mini_CRM_Blazor.Server.Models
         [Required]
         public string ApplicationUserId { get; set; }
 
+        [Required]
+        public DateTime DateLastUpdate { get; set; } = DateTime.Now;
+        [Required]
+        public DateTime DateStart { get; set; } = DateTime.Now;
+
         [ForeignKey("ApplicationUserId")]
         public virtual ApplicationUser ApplicationUser { get; set; }
 

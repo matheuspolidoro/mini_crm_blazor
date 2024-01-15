@@ -23,6 +23,10 @@
             @* <ValidationMessage For="@(() => loginRequest.Password)" />*@
         </MudCardContent>
         <MudCardActions>
+            <div class="form-check m-3">
+                <InputCheckbox id="inputRememberMe" class="form-check-input" @bind-Value="loginRequest.RememberMe" />
+                <label class="form-check-label" for="inputRememberMe">Remember Me</label>
+            </div>
             <MudButton ButtonType="ButtonType.Submit"
                        Variant="Variant.Filled"
                        Color="Color.Primary"
@@ -40,10 +44,6 @@
                 }
             </MudButton>
         </MudCardActions>
-        <div class="form-check m-3">
-            <InputCheckbox id="inputRememberMe" class="form-check-input" @bind-Value="loginRequest.RememberMe" />
-            <label class="form-check-label" for="inputRememberMe">Remember Me</label>
-        </div>
     </MudCard>
     <label class="text-danger">@error</label>
 </EditForm>

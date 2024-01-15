@@ -11,10 +11,9 @@
           Class="pa-16 d-flex flex-column align-items-center"
           Style=@($"gap: 16px; background: {Colors.Indigo.Lighten5}")
           Elevation="0">
-    <MudText Class="ma-12" Typo="Typo.h3" Align="Align.Center" GutterBottom="true">Mini CRM</MudText>
     <MudContainer MaxWidth="MaxWidth.Small">
-        @*<MudText Align="Align.Center">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec est quam, ullamcorper vitae dapibus sed, elementum vitae sapien.</MudText>*@
         <MudCard Elevation="0" Class="rounded-sm my-4">
+            <MudCardMedia Image="images/mini_crm_logo_crop.png" Height="200" />
             <MudCardContent>
                 @if (_isSignInMode)
                 {
@@ -72,12 +71,5 @@
     private void SwitchCustomerSignInSignUp()
     {
         _isSignInMode = !_isSignInMode;
-    }
-
-    private void LogInAsMiniCRMAdmin()
-    {
-        _drawerOpen = !_drawerOpen;
-        _isCustomerLogInForm = !_isCustomerLogInForm;
-        // NavManager.NavigateTo("/");
     }
 }

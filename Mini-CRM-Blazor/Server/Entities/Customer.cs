@@ -16,8 +16,10 @@ namespace Mini_CRM_Blazor.Server.Models
         [Required]
         public string AreaOfBusiness { get; set; }
         public string? Website { get; set; }
-        public virtual ICollection<CustomerContact> CustomerContacts { get; set; } = new List<CustomerContact>();
+
         [ForeignKey("CompanySubscriberId")]
         public virtual CompanySubscriber CompanySubscriber { get; set; }
+        public virtual ICollection<Contract> Contracts { get; set; } = new List<Contract>();
+        public virtual ICollection<CustomerContact> CustomerContacts { get; set; } = new List<CustomerContact>();
     }
 }

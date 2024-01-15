@@ -45,39 +45,5 @@ namespace Mini_CRM_Blazor.Server.DAL.Seeds
             }
         }
 
-       
-         public static async Task CreateCompanies()
-         {
-            var companies = new List<CompanySubscriber> {
-                new() {
-                    Id = Guid.NewGuid(),
-                    CompanyName = "Xpto Corporation, Inc.",
-                    TradingName = "Xpto",
-                    Website = "www.xpto.com",
-                    AreaOfBusiness = "Technology",
-                    Description = "A good description here",
-                    ApplicationUsers = new List<ApplicationUser>
-                    {
-                        new ApplicationUser
-                        {
-                            Id = Guid.NewGuid().ToString(),
-                            Email = "member1@xpto.com",
-                            PhoneNumber = "1234567890",
-                            UserName = "Julio Almeida",
-                            Position = "Position A"
-                        }
-                    }
-
-                },
-                new() {
-                    Id = Guid.NewGuid(),
-                    CompanyName = "Orange Computer, Inc..",
-                    TradingName = "Orange",
-                    Website = "www.orange.com",
-                    AreaOfBusiness = "Technology",
-                    Description = "A good description here"
-                },
-            };
-        }
     }
 }

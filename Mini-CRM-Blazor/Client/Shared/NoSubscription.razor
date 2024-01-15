@@ -8,9 +8,13 @@
 @inject CustomStateProvider authStateProvider
 @inject NavigationManager navigationManager
 
-<h3>It looks like you are not part of an organization yet. A manager of your company must add you as an associate.</h3>
+<MudContainer Class="d-flex flex-column pa-16" MaxWidth="MaxWidth.False" Style=@($"background: {Colors.Indigo.Lighten5}; height: 100vh; padding-top: 64px;")>
+    <MudText>It looks like you are not part of an organization yet. A manager of your company must add you as an associate.</MudText>
+    <MudButton Class="mt-4" Style="width: fit-content; align-self: self-start;" @onclick="LogOut">
+        Sign out
+    </MudButton>
+</MudContainer>
 
-<MudButton @onclick="LogOut">Logout</MudButton>
 
 @code {
     private async Task LogOut()
